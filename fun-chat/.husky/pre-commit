@@ -1,4 +1,4 @@
-cd rss-puzzle
+cd fun-chat
 npm run format
 npm run ci:format
 git add .
