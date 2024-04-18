@@ -97,6 +97,16 @@ h1 {
   opacity: 50%;
 }
 
+.aboutBtn {
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  padding-top: 10px;
+  color: #171313;
+}
+
+
+
 .startBtn {
   cursor: pointer;
   text-decoration: none;

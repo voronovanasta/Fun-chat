@@ -1,19 +1,18 @@
 import { RouterOptions } from "./types/RouterOptions";
-import LoginPageComponent from "./components/LoginPage/LoginPageComponent";
+import LoginPageComponent from "./components/LoginPageComponent";
 import LoginPageController from "./pages/LoginPage/LoginPageController";
 import LoginPageModel from "./pages/LoginPage/LoginPageModel";
 import LoginPageView from "./pages/LoginPage/LoginPageView";
-import StartPageComponent from "./components/StartPage/StartPageComponent";
-import GamePageComponent from "./components/GamePage/GamePageComponent";
 import logoutHandler from "./utils/logoutHandler";
-import showGreeting from "./utils/showGreeting";
+import AboutPageComponent from "./components/AboutPageComponent";
+import MainPageComponent from "./components/MainPageComponent";
 
 export default class Router {
   private routes: RouterOptions;
 
-  private container: HTMLElement;
+  private container: HTMLDivElement;
 
-  constructor(container: HTMLElement) {
+  constructor(container: HTMLDivElement) {
     this.container = container;
     this.routes = {};
   }
@@ -21,9 +20,8 @@ export default class Router {
   init() {
     this.routes = {
       "/": () => this.launchLogin(),
-      "/start": () => this.launchStart(),
-      "/game": () => this.launchGame(),
-      // "/statistics": this.launchStats
+      "/main": () => this.launchMain(),
+      "/about": () => this.launchAbout(),
     };
     window.addEventListener("popstate", () => this.render());
     this.render();
@@ -33,12 +31,12 @@ export default class Router {
     const path = window.location.pathname;
     if (this.routes[path] && this.isLoggedUser()) {
       if (path === "/") {
-        this.launchStart();
+        this.launchMain();
       } else {
         this.routes[path]();
       }
     } else {
-      this.launchLogin();
+      this.routes[path]();
     }
   }
 
@@ -50,15 +48,13 @@ export default class Router {
     loginController.init();
   }
 
-  launchStart() {
-    this.container.innerHTML = StartPageComponent();
+  launchMain() {
+    MainPageComponent(this.container);
     logoutHandler();
-    showGreeting();
   }
 
-  launchGame() {
-    this.container.innerHTML = GamePageComponent();
-    logoutHandler();
+  launchAbout() {
+    AboutPageComponent(this.container);
   }
 
   isLoggedUser() {
