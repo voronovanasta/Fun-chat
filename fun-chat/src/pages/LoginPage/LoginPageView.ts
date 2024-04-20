@@ -28,7 +28,7 @@ export default class LoginPageView {
   }
 
   updateLoginBtn() {
-    const loginBtn = checkedQuerySelector(this.container, "#login");
+    const loginBtn = checkedQuerySelector(this.container, ".login");
     loginBtn?.classList.add("login-active");
   }
 }

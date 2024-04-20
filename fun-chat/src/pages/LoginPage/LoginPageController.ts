@@ -42,7 +42,7 @@ export default class LoginPageController {
             }
           }
           break;
-        case "surname":
+        case "password":
           if (this.surnameErrorContainer !== null) {
             this.surnameErrorContainer.innerHTML = "";
             if (this.model.validateInput(input.id, input.value)) {
@@ -58,12 +58,14 @@ export default class LoginPageController {
   }
 
   loginHandler() {
-    const link = checkedQuerySelector(this.container, "#login");
+    // вызвать в модели создание WS и метода отправки данных для авторизации,(создать метод в модели,
+    // если от сервера пришла ошибка. ее пказать в форме)
+    const link = checkedQuerySelector(this.container, ".login");
     link?.addEventListener("click", (e) => {
-      if (e.target === null) throw new Error("target equals null");
-      const button: HTMLElement = e.target as HTMLElement;
-      if (button.id === "login") {
-        this.model.updateData();
+      if (e.target === null) {
+        throw new Error("target equals null");
+      } else {
+        this.model.sendLoginData();
       }
     });
   }

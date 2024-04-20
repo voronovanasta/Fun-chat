@@ -5,17 +5,14 @@ const MainPageComponent = (root: HTMLDivElement) => {
   mainContentContainer.className = "about";
   mainContentContainer.textContent = "CHAT";
   const aboutBtn = createRouterBtn({
-    href: "/about",
+    id: "/about",
     className: "button aboutBtn target-link",
-    id: "about",
     textContent: "About",
   });
-  const logoutBtn = createRouterBtn({
-    href: "/",
-    className: "logout target-link",
-    id: "logoutBtn",
-    textContent: "Logout",
-  });
+  const logoutBtn = document.createElement("button");
+  logoutBtn.className = "logout target-link logoutBtn";
+  logoutBtn.textContent = "Logout";
+  logoutBtn.id = "/";
   mainContentContainer.append(aboutBtn, logoutBtn);
   root.append(mainContentContainer);
 };

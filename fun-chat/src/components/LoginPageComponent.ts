@@ -9,15 +9,15 @@ const LoginPageComponent = () => `<div class="login-wrapper">
             <div id="errorNameMessage" class="errorlabel"></div>
         </div>
         <div class="item">
-            <label for="surname"></label>
-            <input id="surname" class="input-login" name="surname" type="text" autocomplete="on" placeholder = "Surname" required>
+            <label for="password"></label>
+            <input id="password" class="input-login" name="password" type="text" autocomplete="on" placeholder = "password" required>
         </div>
         <div id="surnameMessage" class="login-form-error">
             <div id="errorSurnameMessage" class="errorlabel"></div>
         </div>
-        <a href="/main" class="button loginBtn target-link" id = "login">Log in</a>
+        <button id="/main" class="button loginBtn target-link login">Log in</button>
     </form>
-    <a href="/about" class = "button aboutBtn target-link" id ="about" >About</a>
+    <button id="/about" class = "button aboutBtn target-link about" >About</button>
 </div>`;
 
 export default LoginPageComponent;

@@ -1,29 +1,62 @@
+import LoginProps from "../../types/LoginProps";
+import SocketClass from "../../SocketClass";
 import LoginPageView from "./LoginPageView";
 
 export default class LoginPageModel {
-  private data: { [key: string]: string };
+  private name: string;
+
+  private password = "";
+
+  private data: LoginProps;
 
   private view: LoginPageView;
 
-  constructor(loginView: LoginPageView) {
-    this.data = {};
+  socket: SocketClass;
+
+  isLogined: boolean;
+
+  constructor(loginView: LoginPageView, socket: SocketClass) {
+    this.data = {
+      id: "0",
+      type: "USER_LOGIN",
+      payload: {
+        user: {
+          login: "",
+          password: "",
+        },
+      },
+    };
+    this.name = "";
+    this.password = "";
     this.view = loginView;
+    this.socket = socket;
+    this.isLogined = false;
+  }
+
+  sendLoginData() {
+    this.data.id += 1;
+    this.data.payload.user = {
+      login: this.name,
+      password: this.password,
+    };
+    console.log(this.data);
+    this.socket.initLogin(this.data);
   }
 
   updateData() {
-    if (this.data.name && this.data.surname) {
-      console.log(this.data);
-      localStorage.setItem("user", JSON.stringify(this.data));
-    }
+    // добавить проверку что прошла авторизация на сервере ,
+    // то есть ответ от сервера тру, тогда сораняем в сешнсториддж
+    console.log(this.data);
+    localStorage.setItem("user", JSON.stringify(this.data));
   }
 
   updateName(name: string) {
-    this.data.name = name;
+    this.name = name;
     this.checkLoginBtnState();
   }
 
-  updateSurname(surname: string) {
-    this.data.surname = surname;
+  updateSurname(password: string) {
+    this.password = password;
     this.checkLoginBtnState();
   }
 
@@ -47,7 +80,7 @@ export default class LoginPageModel {
     return str.length >= 4;
   }
 
-  validateInput(id: "name" | "surname", str: string) {
+  validateInput(id: "name" | "password", str: string) {
     if (!this.isNameOfValidLength(str)) {
       const p = document.createElement("p");
       p.innerHTML =
@@ -78,7 +111,7 @@ export default class LoginPageModel {
       );
     }
 
-    if (id === "surname") {
+    if (id === "password") {
       return !!(
         this.isSurnameOfValidLength(str) &&
         this.isFirstLetterUpperCase(str) &&
@@ -89,7 +122,7 @@ export default class LoginPageModel {
   }
 
   checkLoginBtnState() {
-    if (this.data.name && this.data.surname) {
+    if (this.name && this.password) {
       this.view.updateLoginBtn();
     }
   }
