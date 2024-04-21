@@ -40,12 +40,12 @@ export default class LoginPageModel {
   }
 
   updateName(name: string) {
-    this.name = name;
+    this.name = name.trim();
     this.checkLoginBtnState();
   }
 
   updateSurname(password: string) {
-    this.password = password;
+    this.password = password.trim();
     this.checkLoginBtnState();
   }
 

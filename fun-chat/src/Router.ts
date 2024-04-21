@@ -125,9 +125,9 @@ export default class Router {
     const data = sessionStorage.getItem("user") as string;
 
     const sessionData: SessionObject = JSON.parse(data);
-    this.userData.id = sessionData.id;
-    this.userData.payload.user.login = sessionData.user;
-    this.userData.payload.user.password = sessionData.password;
+    this.userData.id = sessionData.id.trim();
+    this.userData.payload.user.login = sessionData.user.trim();
+    this.userData.payload.user.password = sessionData.password.trim();
 
     this.socket.send(JSON.stringify(this.userData));
   }

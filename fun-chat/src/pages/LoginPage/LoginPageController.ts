@@ -12,6 +12,8 @@ export default class LoginPageController {
 
   private serverErrorContainer: Element;
 
+  private loginBtn: Element;
+
   constructor(container: HTMLElement, loginModel: LoginPageModel) {
     this.container = container;
     this.model = loginModel;
@@ -27,11 +29,14 @@ export default class LoginPageController {
       document,
       "#errorServerMessage",
     );
+
+    this.loginBtn = checkedQuerySelector(this.container, ".login");
   }
 
   init() {
     this.inputHandler();
     this.loginHandler();
+    this.handleEnterPress();
   }
 
   inputHandler() {
@@ -59,6 +64,23 @@ export default class LoginPageController {
           break;
         default:
           break;
+      }
+    });
+  }
+
+  handleEnterPress() {
+    document.addEventListener("keydown", (e) => {
+      if (e.target === null) throw new Error("target equals null");
+      const input: HTMLInputElement = e.target as HTMLInputElement;
+      console.log(e.key);
+      if (
+        e.key === "Enter" &&
+        (input.id === "name" || input.id === "password")
+      ) {
+        if (this.loginBtn.classList.contains("login-active")) {
+          console.log("enter");
+          this.model.sendLoginData();
+        }
       }
     });
   }
