@@ -10,6 +10,8 @@ export default class LoginPageController {
 
   private surnameErrorContainer: Element | null;
 
+  private serverErrorContainer: Element;
+
   constructor(container: HTMLElement, loginModel: LoginPageModel) {
     this.container = container;
     this.model = loginModel;
@@ -21,6 +23,10 @@ export default class LoginPageController {
       document,
       "#errorSurnameMessage",
     );
+    this.serverErrorContainer = checkedQuerySelector(
+      document,
+      "#errorServerMessage",
+    );
   }
 
   init() {
@@ -30,6 +36,7 @@ export default class LoginPageController {
 
   inputHandler() {
     document.addEventListener("input", (e) => {
+      this.serverErrorContainer.innerHTML = "";
       if (e.target === null) throw new Error("target equals null");
       const input: HTMLInputElement = e.target as HTMLInputElement;
 
@@ -49,7 +56,6 @@ export default class LoginPageController {
               this.model.updateSurname(input.value);
             }
           }
-
           break;
         default:
           break;
@@ -58,15 +64,10 @@ export default class LoginPageController {
   }
 
   loginHandler() {
-    // вызвать в модели создание WS и метода отправки данных для авторизации,(создать метод в модели,
-    // если от сервера пришла ошибка. ее пказать в форме)
     const link = checkedQuerySelector(this.container, ".login");
-    link?.addEventListener("click", (e) => {
-      if (e.target === null) {
-        throw new Error("target equals null");
-      } else {
-        this.model.sendLoginData();
-      }
+    link?.addEventListener("click", () => {
+      console.log("press send login");
+      this.model.sendLoginData();
     });
   }
 }

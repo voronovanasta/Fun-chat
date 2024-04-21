@@ -1,5 +1,4 @@
 import LoginProps from "../../types/LoginProps";
-import SocketClass from "../../SocketClass";
 import LoginPageView from "./LoginPageView";
 
 export default class LoginPageModel {
@@ -11,13 +10,11 @@ export default class LoginPageModel {
 
   private view: LoginPageView;
 
-  socket: SocketClass;
+  socket: WebSocket;
 
-  isLogined: boolean;
-
-  constructor(loginView: LoginPageView, socket: SocketClass) {
+  constructor(loginView: LoginPageView, socket: WebSocket) {
     this.data = {
-      id: "0",
+      id: "",
       type: "USER_LOGIN",
       payload: {
         user: {
@@ -30,24 +27,16 @@ export default class LoginPageModel {
     this.password = "";
     this.view = loginView;
     this.socket = socket;
-    this.isLogined = false;
   }
 
   sendLoginData() {
-    this.data.id += 1;
+    this.data.id = this.name;
     this.data.payload.user = {
       login: this.name,
       password: this.password,
     };
     console.log(this.data);
-    this.socket.initLogin(this.data);
-  }
-
-  updateData() {
-    // добавить проверку что прошла авторизация на сервере ,
-    // то есть ответ от сервера тру, тогда сораняем в сешнсториддж
-    console.log(this.data);
-    localStorage.setItem("user", JSON.stringify(this.data));
+    this.socket.send(JSON.stringify(this.data));
   }
 
   updateName(name: string) {

@@ -5,22 +5,46 @@ import LoginPageModel from "./pages/LoginPage/LoginPageModel";
 import LoginPageView from "./pages/LoginPage/LoginPageView";
 import AboutPageComponent from "./components/AboutPageComponent";
 import MainPageComponent from "./components/MainPageComponent";
-import SocketClass from "./SocketClass";
+import ServerResponse from "./types/ServerResponse";
+import checkedQuerySelector from "./types/checkedQuerySelector";
+import LoginProps from "./types/LoginProps";
+import SessionObject from "./types/SessionObject";
 
 export default class Router {
   private routes: RouterOptions;
 
   private container: HTMLDivElement;
 
-  socket: SocketClass;
+  socket: WebSocket;
 
   url: string;
 
-  constructor(container: HTMLDivElement, socket: SocketClass) {
+  userId: string;
+
+  serverErrorContainer: Element | null;
+
+  userData: LoginProps;
+
+  prevUrl: string;
+
+  constructor(container: HTMLDivElement, socket: WebSocket) {
     this.container = container;
     this.routes = {};
     this.socket = socket;
     this.url = "";
+    this.prevUrl = "";
+    this.userId = "";
+    this.serverErrorContainer = null;
+    this.userData = {
+      id: "",
+      type: "USER_LOGOUT",
+      payload: {
+        user: {
+          login: "",
+          password: "",
+        },
+      },
+    };
   }
 
   init() {
@@ -32,6 +56,47 @@ export default class Router {
     this.buttonsHandler();
     window.addEventListener("popstate", () => this.render());
     this.render();
+    this.serverMsgHandler();
+  }
+
+  serverMsgHandler() {
+    this.socket.onmessage = (event) => {
+      const data: ServerResponse = JSON.parse(event.data);
+      console.log(data.id === this.userId);
+      if (data.type === "USER_LOGIN" && data.payload.user?.isLogined) {
+        this.userId = data.id;
+        const name: HTMLInputElement = checkedQuerySelector(
+          document,
+          "#name",
+        ) as HTMLInputElement;
+        const password: HTMLInputElement = checkedQuerySelector(
+          document,
+          "#password",
+        ) as HTMLInputElement;
+        const storageData = {
+          id: name.value,
+          user: name.value,
+          password: password.value,
+        };
+        sessionStorage.setItem("user", JSON.stringify(storageData));
+        this.changeUrl("/main");
+      }
+
+      if (data.type === "USER_LOGOUT" && !data.payload.user?.isLogined) {
+        this.changeUrl("/");
+        sessionStorage.clear();
+      }
+
+      if (data.type === "ERROR" && data.id === this.userId) {
+        if (
+          data.payload.error !== undefined &&
+          this.serverErrorContainer !== null
+        ) {
+          this.serverErrorContainer.innerHTML = data.payload.error;
+        }
+      }
+      console.log(data);
+    };
   }
 
   buttonsHandler() {
@@ -39,16 +104,16 @@ export default class Router {
       if (e.target === null) throw new Error("target equals null");
       const btn: HTMLButtonElement = e.target as HTMLButtonElement;
       switch (btn.id) {
-        case "/main":
-          this.changeUrl("/main");
+        case "return":
+          console.log(this.prevUrl);
+          this.changeUrl(this.prevUrl);
           break;
-        case "/about":
-          console.log("переход через батон");
+        case "logout":
+          this.sendLogout();
+          break;
+        case "about":
+          this.prevUrl = this.url;
           this.changeUrl("/about");
-          break;
-        case "/":
-          console.log("переход через батон");
-          this.changeUrl("/");
           break;
         default:
           break;
@@ -56,27 +121,43 @@ export default class Router {
     });
   }
 
+  sendLogout() {
+    const data = sessionStorage.getItem("user") as string;
+
+    const sessionData: SessionObject = JSON.parse(data);
+    this.userData.id = sessionData.id;
+    this.userData.payload.user.login = sessionData.user;
+    this.userData.payload.user.password = sessionData.password;
+
+    this.socket.send(JSON.stringify(this.userData));
+  }
+
   changeUrl(newUrl: string) {
     this.url = newUrl;
     window.history.pushState({ path: this.url }, "", this.url);
-    console.log(window.location.pathname);
     this.render();
   }
 
   render() {
     const path = window.location.pathname;
-    console.log("render");
+    this.url = path;
+
     if (path === "/main" && this.isLoggedUser()) {
-      console.log("переход на мейн");
+      console.log("c проверкой логина");
       this.launchMain();
     } else {
-      console.log("переход через елс");
+      console.log("без проверки");
       this.routes[path]();
     }
   }
 
   launchLogin() {
     this.container.innerHTML = LoginPageComponent();
+    this.serverErrorContainer = checkedQuerySelector(
+      document,
+      "#errorServerMessage",
+    );
+    console.log(this.serverErrorContainer);
     const loginView = new LoginPageView(this.container);
     const loginModel = new LoginPageModel(loginView, this.socket);
     const loginController = new LoginPageController(this.container, loginModel);
@@ -94,8 +175,6 @@ export default class Router {
   }
 
   isLoggedUser() {
-    console.log("isLoggedUser");
-    console.log(localStorage.getItem("user"));
-    return localStorage.getItem("user") !== null;
+    return sessionStorage.getItem("user") !== null;
   }
 }

@@ -15,9 +15,12 @@ const LoginPageComponent = () => `<div class="login-wrapper">
         <div id="surnameMessage" class="login-form-error">
             <div id="errorSurnameMessage" class="errorlabel"></div>
         </div>
-        <button id="/main" class="button loginBtn target-link login">Log in</button>
+        <button id="" type="button" class="button loginBtn target-link login">Log in</button>
+        <div id="serverMessage" class="login-form-error">
+            <div id="errorServerMessage" class="errorlabel"></div>
+        </div>
     </form>
-    <button id="/about" class = "button aboutBtn target-link about" >About</button>
+    <button id="about" class = "button aboutBtn target-link about" >About</button>
 </div>`;
 
 export default LoginPageComponent;

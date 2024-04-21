@@ -3,6 +3,7 @@ const AboutPageComponent = (root: HTMLDivElement) => {
   aboutContentContainer.className = "about";
   const returnBtn = document.createElement("button");
   returnBtn.className = "button";
+  returnBtn.id = "return";
   returnBtn.textContent = "Return";
   const title = document.createElement("h3");
   title.textContent = "Fun chat";
