@@ -9,6 +9,10 @@ import ServerResponse from "./types/ServerResponse";
 import checkedQuerySelector from "./types/checkedQuerySelector";
 import LoginProps from "./types/LoginProps";
 import SessionObject from "./types/SessionObject";
+import MainPageModel from "./pages/MainPage/MainPageModel";
+import MainPageView from "./pages/MainPage/MainPageView";
+// eslint-disable-next-line import/no-unresolved
+import MainPageController from "./pages/MainPage/MainPageController";
 
 export default class Router {
   private routes: RouterOptions;
@@ -60,7 +64,7 @@ export default class Router {
   }
 
   serverMsgHandler() {
-    this.socket.onmessage = (event) => {
+    this.socket.addEventListener("message", (event) => {
       const data: ServerResponse = JSON.parse(event.data);
       console.log(data.id === this.userId);
       if (data.type === "USER_LOGIN" && data.payload.user?.isLogined) {
@@ -96,7 +100,7 @@ export default class Router {
         }
       }
       console.log(data);
-    };
+    });
   }
 
   buttonsHandler() {
@@ -167,6 +171,14 @@ export default class Router {
   launchMain() {
     this.container.innerHTML = "";
     MainPageComponent(this.container);
+    const mainPageView = new MainPageView(this.container);
+    const mainPageModel = new MainPageModel(mainPageView, this.socket);
+    const mainPageController = new MainPageController(
+      this.container,
+      mainPageModel,
+    );
+    mainPageModel.init();
+    mainPageController.init();
   }
 
   launchAbout() {

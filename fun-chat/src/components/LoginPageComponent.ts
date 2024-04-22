@@ -1,5 +1,5 @@
 const LoginPageComponent = () => `<div class="login-wrapper">
-    <h1>English Puzzle</h1><h3>Registration</h3>
+    <h1>Fun Chat</h1><h3>Registration</h3>
     <form id="login-form" class="login-form">
        <div class="item">
            <label for="name"></label>
