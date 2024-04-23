@@ -70,6 +70,10 @@ h1 {
     box-shadow: 3px 2px 4px 1px rgba(0,0,0,.4);
 }
 
+.button:hover {
+ opacity: 70%;
+}
+
 .errorlabel p {
   color: red;
 }
@@ -78,7 +82,6 @@ h1 {
   cursor: pointer;
   text-decoration: none;
   text-align: center;
-  padding-top: 10px;
   color: #171313;
   pointer-events: none;
   opacity: 50%;
@@ -88,7 +91,6 @@ h1 {
   cursor: pointer;
   text-decoration: none;
   text-align: center;
-  padding-top: 10px;
   color: #171313;
 }
 
@@ -98,7 +100,6 @@ h1 {
   cursor: pointer;
   text-decoration: none;
   text-align: center;
-  padding-top: 10px;
   color: #171313;
 }
 
@@ -207,7 +208,7 @@ header > .button {
 
 main {
   display: flex;
-  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 .user {
@@ -226,13 +227,15 @@ main {
 
 .user-list {
   width: 300px;
-  height: 300px;
-  border: 1px solid #171313;
+  height: 375px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
 }
 
 #search {
-  width: 200px;
-  text-decoration: none;
+  height: 30px;
+  
 }
 
 .chat {
@@ -245,12 +248,68 @@ main {
 .selected-user {
   width: 500px;
   height: 50px;
-  border: 1px solid #171313;
 }
 
 .messages-field {
   width: 500px;
   height: 300px;
   border: 1px solid #171313;
+  overflow-y: scroll;
+}
+
+#message-form {
+  height: 50px;
+}
+
+#message {
+  height: 30px;
+  width: 400px;
+  opacity: 50%;
+  margin: 10px 10px 0 10px;
+  cursor: pointer;
+
+}
+
+#submitBtn {
+  height: 30px;
+  opacity: 70%;
+  cursor: pointer;
+  border: none;
+}
+
+#submitBtn:hover {
+  background-color: cadetblue;
+
+}
+
+.contact-container {
+  margin: 5px 0 0;
+  cursor: pointer;
+
+}
+
+.contact-container:active {
+  color: blueviolet;
+}
+
+.contact-container:hover {
+  background-color: cadetblue;
+
+}
+
+.logged {
+  color: #32CD32;
+}
+
+.unlogged {
+  color: #FF5733;
+}
+
+.selected {
+  background-color: cadetblue;
+}
+
+#message-form[disabled] {
+  pointer-events: none;
 }
 

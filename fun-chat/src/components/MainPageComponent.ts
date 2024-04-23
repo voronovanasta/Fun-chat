@@ -6,7 +6,7 @@ const MainPageComponent = (root: HTMLDivElement) => {
   const footer = document.createElement("footer");
 
   const userName = document.createElement("div");
-  const title = document.createElement("h2");
+  const title = document.createElement("h4");
   userName.className = "user";
   header.className = "header";
   title.textContent = "Fun Chat";
@@ -37,14 +37,18 @@ const MainPageComponent = (root: HTMLDivElement) => {
   selectedUser.className = "selected-user";
   const messagesField = document.createElement("div");
   messagesField.className = "messages-field";
+  messagesField.innerHTML = `<p>Choose a contact to start a chat...</p>`;
   const msgFom = document.createElement("form");
   msgFom.id = "message-form";
   const msgInput = document.createElement("input");
   msgInput.type = "text";
   msgInput.id = "message";
+  msgInput.setAttribute("disabled", "disabled");
   const msgSubmitBtn = document.createElement("input");
   msgSubmitBtn.type = "submit";
+  msgSubmitBtn.textContent = "Send";
   msgSubmitBtn.id = "submitBtn";
+  msgSubmitBtn.setAttribute("disabled", "disabled");
 
   msgFom.append(msgInput, msgSubmitBtn);
   chat.append(selectedUser, messagesField, msgFom);

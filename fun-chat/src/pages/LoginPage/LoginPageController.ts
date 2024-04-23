@@ -1,8 +1,13 @@
+import MainPageComponent from "../../components/MainPageComponent";
+import ServerResponse from "../../types/ServerResponse";
 import checkedQuerySelector from "../../types/checkedQuerySelector";
+import MainPageController from "../MainPage/MainPageController";
+import MainPageModel from "../MainPage/MainPageModel";
+import MainPageView from "../MainPage/MainPageView";
 import LoginPageModel from "./LoginPageModel";
 
 export default class LoginPageController {
-  private container: HTMLElement;
+  private container: HTMLDivElement;
 
   private model: LoginPageModel;
 
@@ -14,9 +19,19 @@ export default class LoginPageController {
 
   private loginBtn: Element;
 
-  constructor(container: HTMLElement, loginModel: LoginPageModel) {
+  socket: WebSocket;
+
+  userId: string;
+
+  constructor(
+    container: HTMLDivElement,
+    loginModel: LoginPageModel,
+    socket: WebSocket,
+  ) {
     this.container = container;
     this.model = loginModel;
+    this.socket = socket;
+    this.userId = "";
     this.nameErrorContainer = checkedQuerySelector(
       document,
       "#errorNameMessage",
@@ -35,8 +50,56 @@ export default class LoginPageController {
 
   init() {
     this.inputHandler();
+    this.serverMsgHandler();
     this.loginHandler();
     this.handleEnterPress();
+  }
+
+  serverMsgHandler() {
+    this.socket.addEventListener("message", (event) => {
+      const data: ServerResponse = JSON.parse(event.data);
+      console.log(data.id === this.userId);
+      if (data.type === "USER_LOGIN" && data.payload.user?.isLogined) {
+        this.userId = data.id;
+        const name: HTMLInputElement = checkedQuerySelector(
+          document,
+          "#name",
+        ) as HTMLInputElement;
+        const password: HTMLInputElement = checkedQuerySelector(
+          document,
+          "#password",
+        ) as HTMLInputElement;
+        const storageData = {
+          id: name.value,
+          user: name.value,
+          password: password.value,
+        };
+        sessionStorage.setItem("user", JSON.stringify(storageData));
+
+        window.history.pushState({ path: "/main" }, "", "/main");
+        console.log("c проверкой логина");
+        this.container.innerHTML = "";
+        MainPageComponent(this.container);
+        const mainPageView = new MainPageView(this.container);
+        const mainPageModel = new MainPageModel(mainPageView, this.socket);
+        const mainPageController = new MainPageController(
+          this.container,
+          mainPageModel,
+        );
+        mainPageModel.init();
+        mainPageController.init();
+      }
+
+      if (data.type === "ERROR" && data.id === this.userId) {
+        if (
+          data.payload.error !== undefined &&
+          this.serverErrorContainer !== null
+        ) {
+          this.serverErrorContainer.innerHTML = data.payload.error;
+        }
+      }
+      console.log(data);
+    });
   }
 
   inputHandler() {

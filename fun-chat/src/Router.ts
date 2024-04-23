@@ -1,5 +1,6 @@
 import { RouterOptions } from "./types/RouterOptions";
 import LoginPageComponent from "./components/LoginPageComponent";
+// eslint-disable-next-line import/no-cycle
 import LoginPageController from "./pages/LoginPage/LoginPageController";
 import LoginPageModel from "./pages/LoginPage/LoginPageModel";
 import LoginPageView from "./pages/LoginPage/LoginPageView";
@@ -11,7 +12,6 @@ import LoginProps from "./types/LoginProps";
 import SessionObject from "./types/SessionObject";
 import MainPageModel from "./pages/MainPage/MainPageModel";
 import MainPageView from "./pages/MainPage/MainPageView";
-// eslint-disable-next-line import/no-unresolved
 import MainPageController from "./pages/MainPage/MainPageController";
 
 export default class Router {
@@ -66,39 +66,39 @@ export default class Router {
   serverMsgHandler() {
     this.socket.addEventListener("message", (event) => {
       const data: ServerResponse = JSON.parse(event.data);
-      console.log(data.id === this.userId);
-      if (data.type === "USER_LOGIN" && data.payload.user?.isLogined) {
-        this.userId = data.id;
-        const name: HTMLInputElement = checkedQuerySelector(
-          document,
-          "#name",
-        ) as HTMLInputElement;
-        const password: HTMLInputElement = checkedQuerySelector(
-          document,
-          "#password",
-        ) as HTMLInputElement;
-        const storageData = {
-          id: name.value,
-          user: name.value,
-          password: password.value,
-        };
-        sessionStorage.setItem("user", JSON.stringify(storageData));
-        this.changeUrl("/main");
-      }
+      // console.log(data.id === this.userId);
+      // if (data.type === "USER_LOGIN" && data.payload.user?.isLogined) {
+      //   this.userId = data.id;
+      //   const name: HTMLInputElement = checkedQuerySelector(
+      //     document,
+      //     "#name",
+      //   ) as HTMLInputElement;
+      //   const password: HTMLInputElement = checkedQuerySelector(
+      //     document,
+      //     "#password",
+      //   ) as HTMLInputElement;
+      //   const storageData = {
+      //     id: name.value,
+      //     user: name.value,
+      //     password: password.value,
+      //   };
+      //   sessionStorage.setItem("user", JSON.stringify(storageData));
+      //   this.changeUrl("/main");
+      // }
 
       if (data.type === "USER_LOGOUT" && !data.payload.user?.isLogined) {
         this.changeUrl("/");
         sessionStorage.clear();
       }
 
-      if (data.type === "ERROR" && data.id === this.userId) {
-        if (
-          data.payload.error !== undefined &&
-          this.serverErrorContainer !== null
-        ) {
-          this.serverErrorContainer.innerHTML = data.payload.error;
-        }
-      }
+      // if (data.type === "ERROR" && data.id === this.userId) {
+      //   if (
+      //     data.payload.error !== undefined &&
+      //     this.serverErrorContainer !== null
+      //   ) {
+      //     this.serverErrorContainer.innerHTML = data.payload.error;
+      //   }
+      // }
       console.log(data);
     });
   }
@@ -116,7 +116,7 @@ export default class Router {
           this.sendLogout();
           break;
         case "about":
-          this.prevUrl = this.url;
+          this.prevUrl = window.location.pathname;
           this.changeUrl("/about");
           break;
         default:
@@ -161,10 +161,13 @@ export default class Router {
       document,
       "#errorServerMessage",
     );
-    console.log(this.serverErrorContainer);
     const loginView = new LoginPageView(this.container);
     const loginModel = new LoginPageModel(loginView, this.socket);
-    const loginController = new LoginPageController(this.container, loginModel);
+    const loginController = new LoginPageController(
+      this.container,
+      loginModel,
+      this.socket,
+    );
     loginController.init();
   }
 

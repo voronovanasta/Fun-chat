@@ -15,7 +15,7 @@ const LoginPageComponent = () => `<div class="login-wrapper">
         <div id="surnameMessage" class="login-form-error">
             <div id="errorSurnameMessage" class="errorlabel"></div>
         </div>
-        <button id="" type="button" class="button loginBtn target-link login">Log in</button>
+        <button id="log-btn" type="button" class="button loginBtn target-link login">Log in</button>
         <div id="serverMessage" class="login-form-error">
             <div id="errorServerMessage" class="errorlabel"></div>
         </div>
