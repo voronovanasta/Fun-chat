@@ -72,7 +72,13 @@ export default class MainPageController {
         if (e.target?.classList.contains("contact-container")) {
           e.target.classList.add("selected");
           const userState = this.getUserstate(e.target);
-          const selectedContactName = e.target.textContent as string;
+          let selectedContactName = e.target.textContent as string;
+          if (selectedContactName.indexOf("(") > 0) {
+            const index = selectedContactName.indexOf("(");
+            selectedContactName = selectedContactName.slice(0, index);
+            console.log(selectedContactName);
+          }
+
           this.model.updateSelectedUserField(selectedContactName, userState);
           this.model.fetchMsgHistory();
         }

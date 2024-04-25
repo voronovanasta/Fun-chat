@@ -301,6 +301,7 @@ main {
 .contact-container {
   margin: 5px 0 0;
   cursor: pointer;
+  display: flex;
 
 }
 
@@ -356,4 +357,8 @@ main {
 
 .line {
   border-bottom: 3px dotted violet;
+}
+
+footer a{
+  text-decoration: none;
 }

@@ -88,7 +88,9 @@ export default class LoginPageController {
         mainPageController.init();
       }
 
-      if (data.type === "ERROR" && data.id === this.userId) {
+      console.log(data.id === this.userId);
+
+      if (data.type === "ERROR") {
         if (
           data.payload.error !== undefined &&
           this.serverErrorContainer !== null

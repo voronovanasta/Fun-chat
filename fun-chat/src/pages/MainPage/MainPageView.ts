@@ -22,6 +22,7 @@ export default class MainPageView {
   constructor(container: HTMLElement) {
     this.container = container;
     this.isDividedLine = false;
+
     this.userList = checkedQuerySelector(
       this.container,
       ".user-list",
@@ -45,6 +46,24 @@ export default class MainPageView {
       this.container,
       "#submitBtn",
     ) as HTMLInputElement;
+  }
+
+  updateMsgCountperContact(sender: string) {
+    const count = checkedQuerySelector(this.userList, `#${sender} #count`);
+    let prevCount = Number(count.innerHTML);
+    if (!prevCount) {
+      prevCount = Number(count.innerHTML.slice(2, count.innerHTML.length - 1));
+    }
+    count.innerHTML = ` (${prevCount + 1})`;
+  }
+
+  scrollToEnd() {
+    if (!this.container.querySelector(".line")) {
+      (this.messagesField.lastChild as HTMLElement).scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    }
   }
 
   scrollToLastSentMsg(msg: Message) {
@@ -189,5 +208,10 @@ export default class MainPageView {
       line.remove();
       this.isDividedLine = false;
     }
+  }
+
+  deleteMsgCountperContact(sender: string) {
+    const count = checkedQuerySelector(this.userList, `#${sender} #count`);
+    count.innerHTML = "";
   }
 }

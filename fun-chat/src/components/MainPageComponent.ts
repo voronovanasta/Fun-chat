@@ -20,6 +20,7 @@ const MainPageComponent = (root: HTMLDivElement) => {
   logoutBtn.textContent = "Logout";
   logoutBtn.id = "logout";
   header.append(userName, title, aboutBtn, logoutBtn);
+  footer.innerHTML = `2023       <a href = "https://rs.school/courses/javascript-mentoring-program">RSSchool</a>          <a href = "https://github.com/voronovanasta">Воронова Анастасия</a>`;
 
   const usersField = document.createElement("div");
   usersField.className = "users-field";

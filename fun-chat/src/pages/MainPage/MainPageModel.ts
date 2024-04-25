@@ -26,6 +26,10 @@ export default class MainPageModel {
 
   unreadMessages: Message[];
 
+  count: number;
+
+  currentSender: string;
+
   constructor(view: MainPageView, socket: WebSocket) {
     this.socket = socket;
     this.view = view;
@@ -35,6 +39,8 @@ export default class MainPageModel {
     this.selectedUser = "";
     this.messages = [];
     this.unreadMessages = [];
+    this.count = 0;
+    this.currentSender = "";
   }
 
   init() {
@@ -117,7 +123,7 @@ export default class MainPageModel {
       if (data.type === "MSG_FROM_USER") {
         this.messages = data.payload.messages;
         this.view.updateMessagesField(this.messages, this.userName);
-        // this.scrollIntoViewHandler();
+        this.view.scrollToEnd();
       }
 
       if (data.type === "MSG_SEND") {
@@ -134,8 +140,10 @@ export default class MainPageModel {
           message.to === this.userName &&
           message.from === this.selectedUser
         ) {
+          console.log("here");
           this.view.renderReceivedMessage(message);
           this.scrollIntoViewHandler();
+          this.updateMsgCounter(message);
         }
       }
 
@@ -154,6 +162,13 @@ export default class MainPageModel {
         );
       }
     });
+  }
+
+  updateMsgCounter(msg: Message) {
+    console.log("update count");
+    const sender = msg.from;
+    this.currentSender = sender;
+    this.view.updateMsgCountperContact(sender);
   }
 
   getLoggedContacts() {
@@ -234,5 +249,12 @@ export default class MainPageModel {
       );
     });
     this.view.removeDividedLine();
+    if (this.currentSender) {
+      if (this.currentSender === this.userName) {
+        this.view.deleteMsgCountperContact(this.currentSender);
+      } else {
+        this.view.deleteMsgCountperContact(this.currentSender);
+      }
+    }
   }
 }
