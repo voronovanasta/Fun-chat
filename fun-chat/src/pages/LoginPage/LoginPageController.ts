@@ -58,7 +58,6 @@ export default class LoginPageController {
   serverMsgHandler() {
     this.socket.addEventListener("message", (event) => {
       const data: ServerResponse = JSON.parse(event.data);
-      console.log(data.id === this.userId);
       if (data.type === "USER_LOGIN" && data.payload.user?.isLogined) {
         this.userId = data.id;
         const name: HTMLInputElement = checkedQuerySelector(
@@ -77,7 +76,6 @@ export default class LoginPageController {
         sessionStorage.setItem("user", JSON.stringify(storageData));
 
         window.history.pushState({ path: "/main" }, "", "/main");
-        console.log("c проверкой логина");
         this.container.innerHTML = "";
         MainPageComponent(this.container);
         const mainPageView = new MainPageView(this.container);
@@ -98,7 +96,6 @@ export default class LoginPageController {
           this.serverErrorContainer.innerHTML = data.payload.error;
         }
       }
-      console.log(data);
     });
   }
 
@@ -135,13 +132,11 @@ export default class LoginPageController {
     document.addEventListener("keydown", (e) => {
       if (e.target === null) throw new Error("target equals null");
       const input: HTMLInputElement = e.target as HTMLInputElement;
-      console.log(e.key);
       if (
         e.key === "Enter" &&
         (input.id === "name" || input.id === "password")
       ) {
         if (this.loginBtn.classList.contains("login-active")) {
-          console.log("enter");
           this.model.sendLoginData();
         }
       }
@@ -151,7 +146,6 @@ export default class LoginPageController {
   loginHandler() {
     const link = checkedQuerySelector(this.container, ".login");
     link?.addEventListener("click", () => {
-      console.log("press send login");
       this.model.sendLoginData();
     });
   }

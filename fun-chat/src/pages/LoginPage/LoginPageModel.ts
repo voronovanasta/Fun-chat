@@ -35,7 +35,6 @@ export default class LoginPageModel {
       login: this.name,
       password: this.password,
     };
-    console.log(this.data);
     this.socket.send(JSON.stringify(this.data));
   }
 

@@ -226,6 +226,7 @@ main {
 }
 
 .user-list {
+  padding: 8px;
   width: 300px;
   height: 375px;
   display: flex;
@@ -234,7 +235,11 @@ main {
 }
 
 #search {
+  opacity: 60%;
+  margin: 10px 10px 0 10px;
+  cursor: pointer;
   height: 30px;
+  width: 250px;
   
 }
 
@@ -248,6 +253,15 @@ main {
 .selected-user {
   width: 500px;
   height: 50px;
+  text-align: center;
+  display: flex;
+  font-size: 20px;
+  font-style: italic;
+  align-items: center;
+}
+
+.selected-user >* {
+  margin-left: 10px;
 }
 
 .messages-field {
@@ -255,6 +269,8 @@ main {
   height: 300px;
   border: 1px solid #171313;
   overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
 }
 
 #message-form {
@@ -263,7 +279,7 @@ main {
 
 #message {
   height: 30px;
-  width: 400px;
+  width: 300px;
   opacity: 50%;
   margin: 10px 10px 0 10px;
   cursor: pointer;
@@ -313,3 +329,31 @@ main {
   pointer-events: none;
 }
 
+.msg-wrapper {
+  font-size: 8px;
+  margin-bottom: 5px;
+  
+}
+
+.msg-content {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  text-align: right;
+  background-color: antiquewhite;
+}
+
+.text {
+  background-color: white;
+  text-align: left;
+  float: right;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px dotted violet;
+  width: 200px;
+ padding: 5px;
+}
+
+.line {
+  border-bottom: 3px dotted violet;
+}

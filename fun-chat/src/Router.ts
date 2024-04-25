@@ -109,7 +109,6 @@ export default class Router {
       const btn: HTMLButtonElement = e.target as HTMLButtonElement;
       switch (btn.id) {
         case "return":
-          console.log(this.prevUrl);
           this.changeUrl(this.prevUrl);
           break;
         case "logout":
@@ -149,6 +148,8 @@ export default class Router {
     if (path === "/main" && this.isLoggedUser()) {
       console.log("c проверкой логина");
       this.launchMain();
+    } else if (path === "/main" && !this.isLoggedUser()) {
+      this.changeUrl("/");
     } else {
       console.log("без проверки");
       this.routes[path]();

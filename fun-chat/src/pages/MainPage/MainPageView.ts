@@ -17,8 +17,11 @@ export default class MainPageView {
 
   msgSubmitBtn: HTMLInputElement;
 
+  isDividedLine: boolean;
+
   constructor(container: HTMLElement) {
     this.container = container;
+    this.isDividedLine = false;
     this.userList = checkedQuerySelector(
       this.container,
       ".user-list",
@@ -42,6 +45,31 @@ export default class MainPageView {
       this.container,
       "#submitBtn",
     ) as HTMLInputElement;
+  }
+
+  scrollToLastSentMsg(msg: Message) {
+    const lastMessage = checkedQuerySelector(
+      this.messagesField,
+      `.text[data-id="${msg.id}"]`,
+    );
+
+    lastMessage.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }
+
+  scrollIntoViewHandler() {
+    if (document.querySelector(".line")) {
+      const line = checkedQuerySelector(
+        this.messagesField,
+        ".line",
+      ) as HTMLDivElement;
+      (line.nextElementSibling as HTMLElement)?.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    }
   }
 
   showUserName(userName: string) {
@@ -69,7 +97,6 @@ export default class MainPageView {
   }
 
   updateSelectedUserField(name: string, state: string) {
-    console.log(state);
     if (state === "active") {
       this.selectedUserField.classList.remove("unlogged");
       this.selectedUserField.classList.add("logged");
@@ -77,15 +104,22 @@ export default class MainPageView {
       this.selectedUserField.classList.remove("logged");
       this.selectedUserField.classList.add("unlogged");
     }
-    this.selectedUserField.innerHTML = `<h6>${name}</h6><span>${state}</span>`;
+    this.selectedUserField.innerHTML = `<p>${name} - </p><span>${state}</span>`;
   }
 
-  updateMessagesField(messages: Message[]) {
+  updateMessagesField(messages: Message[], currentUser: string) {
     if (messages.length === 0) {
       this.messagesField.innerHTML = `<p>No messages so far with this contact.Start a chat now!</p>`;
     } else {
+      this.messagesField.innerHTML = "";
       messages.forEach((msg) => {
-        this.messagesField.append(createMsgItem(msg));
+        if (msg.from === currentUser) {
+          this.renderSentMessage(msg);
+        }
+
+        if (msg.to === currentUser) {
+          this.renderReceivedMessage(msg);
+        }
       });
     }
   }
@@ -93,5 +127,67 @@ export default class MainPageView {
   updateMsgForm() {
     this.messageInput.removeAttribute("disabled");
     this.msgSubmitBtn.removeAttribute("disabled");
+  }
+
+  renderSentMessage(msg: Message) {
+    this.messagesField.append(createMsgItem(msg, "right"));
+  }
+
+  renderReceivedMessage(msg: Message) {
+    console.log("render received msg");
+    if (!msg.status.isReaded && !this.isDividedLine) {
+      this.drawDividedLine();
+      this.isDividedLine = true;
+    }
+    this.messagesField.append(createMsgItem(msg, "left"));
+  }
+
+  updateStatus(
+    msgId: string,
+    status: { isDelivered?: boolean; isReaded?: boolean; isEdited?: boolean },
+  ) {
+    const textEl = checkedQuerySelector(
+      this.messagesField,
+      `.text[data-id="${msgId}"]`,
+    );
+    const parent = textEl.parentElement;
+    if (parent === null) throw new Error("Parent not found.");
+    const deliveryStatus = checkedQuerySelector(parent, "#delivery-status");
+    if (status.isDelivered) {
+      deliveryStatus.textContent = "delivered";
+    }
+
+    if (
+      status.isReaded &&
+      deliveryStatus.getAttribute("data-sender") === "you"
+    ) {
+      deliveryStatus.textContent = "read";
+    }
+
+    if (status.isEdited) {
+      const text = deliveryStatus.textContent;
+      deliveryStatus.textContent = `edited  ${text}`;
+    }
+  }
+
+  drawDividedLine() {
+    console.log("draw a line");
+    const line = document.createElement("div");
+    line.textContent = "Unread messages";
+    line.className = "line";
+    this.messagesField.append(line);
+  }
+
+  removeDividedLine() {
+    console.log(this.isDividedLine);
+    if (this.isDividedLine && document.querySelector(".line")) {
+      const line = checkedQuerySelector(
+        this.container,
+        ".line",
+      ) as HTMLDivElement;
+      console.log("line deleted");
+      line.remove();
+      this.isDividedLine = false;
+    }
   }
 }

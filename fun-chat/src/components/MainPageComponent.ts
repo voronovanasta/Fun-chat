@@ -40,13 +40,17 @@ const MainPageComponent = (root: HTMLDivElement) => {
   messagesField.innerHTML = `<p>Choose a contact to start a chat...</p>`;
   const msgFom = document.createElement("form");
   msgFom.id = "message-form";
+
   const msgInput = document.createElement("input");
   msgInput.type = "text";
   msgInput.id = "message";
+  msgInput.name = "content";
+  msgInput.placeholder = "Type a message...";
   msgInput.setAttribute("disabled", "disabled");
   const msgSubmitBtn = document.createElement("input");
   msgSubmitBtn.type = "submit";
-  msgSubmitBtn.textContent = "Send";
+  msgSubmitBtn.value = "Send";
+  msgSubmitBtn.className = "button";
   msgSubmitBtn.id = "submitBtn";
   msgSubmitBtn.setAttribute("disabled", "disabled");
 

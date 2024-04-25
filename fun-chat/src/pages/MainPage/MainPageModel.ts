@@ -5,6 +5,9 @@ import MainPageView from "./MainPageView";
 import ThirdServerResponse from "../../types/ThirdServerResponse";
 import MsgHistoryServerResponse from "../../types/MsgHistoryServerResponse";
 import Message from "../../types/Message";
+import SendMsgServerResponse from "../../types/SendMsgServerResponse";
+import DeliveryServerResponse from "../../types/DeliveryServerResponse";
+import ReadServerResponse from "../../types/ReadServerResponse";
 
 export default class MainPageModel {
   socket: WebSocket;
@@ -21,6 +24,8 @@ export default class MainPageModel {
 
   messages: Message[];
 
+  unreadMessages: Message[];
+
   constructor(view: MainPageView, socket: WebSocket) {
     this.socket = socket;
     this.view = view;
@@ -29,6 +34,7 @@ export default class MainPageModel {
     this.userName = "";
     this.selectedUser = "";
     this.messages = [];
+    this.unreadMessages = [];
   }
 
   init() {
@@ -36,6 +42,11 @@ export default class MainPageModel {
     this.getLoggedContacts();
     this.getUnloggedContacts();
     this.serverMessageHandler();
+    this.scrollIntoViewHandler();
+  }
+
+  scrollIntoViewHandler() {
+    this.view.scrollIntoViewHandler();
   }
 
   getUserName() {
@@ -68,7 +79,10 @@ export default class MainPageModel {
       const data:
         | UsersServerResponse
         | ThirdServerResponse
-        | MsgHistoryServerResponse = JSON.parse(e.data);
+        | MsgHistoryServerResponse
+        | SendMsgServerResponse
+        | DeliveryServerResponse
+        | ReadServerResponse = JSON.parse(e.data);
       if (data.type === "USER_ACTIVE") {
         this.loggedContacts = data.payload.users;
         this.view.showContacts(
@@ -102,7 +116,42 @@ export default class MainPageModel {
 
       if (data.type === "MSG_FROM_USER") {
         this.messages = data.payload.messages;
-        this.view.updateMessagesField(this.messages);
+        this.view.updateMessagesField(this.messages, this.userName);
+        // this.scrollIntoViewHandler();
+      }
+
+      if (data.type === "MSG_SEND") {
+        const { message } = data.payload;
+        this.messages.push(message);
+        if (
+          message.from === this.userName &&
+          message.to === this.selectedUser
+        ) {
+          this.view.renderSentMessage(message);
+          this.view.scrollToLastSentMsg(message);
+        }
+        if (
+          message.to === this.userName &&
+          message.from === this.selectedUser
+        ) {
+          this.view.renderReceivedMessage(message);
+          this.scrollIntoViewHandler();
+        }
+      }
+
+      if (data.type === "MSG_DELIVER") {
+        this.view.updateStatus(
+          data.payload.message.id,
+          data.payload.message.status,
+        );
+      }
+
+      if (data.type === "MSG_READ") {
+        console.log("read status changed");
+        this.view.updateStatus(
+          data.payload.message.id,
+          data.payload.message.status,
+        );
       }
     });
   }
@@ -149,5 +198,41 @@ export default class MainPageModel {
         },
       }),
     );
+  }
+
+  sendMessage(text: FormDataEntryValue) {
+    this.socket.send(
+      JSON.stringify({
+        id: this.selectedUser,
+        type: "MSG_SEND",
+        payload: {
+          message: {
+            to: this.selectedUser,
+            text,
+          },
+        },
+      }),
+    );
+  }
+
+  setReadStatus() {
+    this.unreadMessages = this.messages.filter(
+      (el) => el.to === this.userName && !el.status.isReaded,
+    );
+
+    this.unreadMessages.forEach((el) => {
+      this.socket.send(
+        JSON.stringify({
+          id: el.id,
+          type: "MSG_READ",
+          payload: {
+            message: {
+              id: el.id,
+            },
+          },
+        }),
+      );
+    });
+    this.view.removeDividedLine();
   }
 }
